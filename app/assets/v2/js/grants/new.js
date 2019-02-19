@@ -26,7 +26,7 @@ function saveGrant({grantData = [], isFinal = false}) {
   });
 }
 
-function processReceipt(receipt) {
+const processReceipt = receipt => {
   let data = {
     'contract_address': receipt.contractAddress,
     'csrfmiddlewaretoken': $("#create-grant input[name='csrfmiddlewaretoken']").val(),
@@ -134,14 +134,14 @@ const init = () => {
             let checkedBlocks = [];
             let blockToCheck = null;
 
-            var checkForContractCreation = function(transactionHash) {
+            const checkForContractCreation = transactionHash => {
 
-              web3.eth.getTransactionReceipt(transactionHash, function(error, receipt) {
+              web3.eth.getTransactionReceipt(transactionHash, (error, receipt) => {
                 if (receipt && receipt.contractAddress) {
                   processReceipt(receipt);
                 } else if (blockToCheck === null) {
                   // start watching for re-issued transaction with same sender, TODO: nonce, contract hash, etc?
-                  web3.eth.getBlockNumber(function(error, blockNumber) {
+                  web3.eth.getBlockNumber((error, blockNumber) => {
                     blockToCheck = blockNumber;
                     setTimeout(() => {
                       checkForContractCreation(transactionHash);
@@ -152,7 +152,7 @@ const init = () => {
                     checkForContractCreation(transactionHash);
                   }, 1000);
                 } else {
-                  web3.eth.getBlock(blockToCheck, true, function(error, block) {
+                  web3.eth.getBlock(blockToCheck, true, (error, block) => {
                     if (error) {
                       setTimeout(() => {
                         checkForContractCreation(transactionHash);
@@ -163,10 +163,10 @@ const init = () => {
 
                       let didFindTransaction = false;
 
-                      for (var i = 0; i < block.transactions.length; i += 1) {
+                      for (let i = 0; i < block.transactions.length; i += 1) {
                         if (block.transactions[i].from == accounts[0]) {
                           didFindTransaction = true;
-                          web3.eth.getTransactionReceipt(block.transactions[i].hash, function(error, result) {
+                          web3.eth.getTransactionReceipt(block.transactions[i].hash, (error, result) => {
                             if (result && result.contractAddress) {
                               processReceipt(result);
                               return;

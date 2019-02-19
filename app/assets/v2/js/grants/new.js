@@ -34,7 +34,7 @@ const processReceipt = receipt => {
   };
 
   saveGrant({grantData: data, isFinal: true});
-}
+};
 
 const init = () => {
   if (localStorage['grants_quickstart_disable'] !== 'true') {
